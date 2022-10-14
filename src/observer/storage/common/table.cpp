@@ -118,6 +118,43 @@ RC Table::create(
   return rc;
 }
 
+RC Table::drop(
+    const char *path, const char *name, const char *base_dir)
+{
+  if (common::is_blank(name)) {
+    LOG_WARN("Name cannot be empty");
+    return RC::INVALID_ARGUMENT;
+  }
+  LOG_INFO("Begin to drop table %s:%s", base_dir, name);
+
+  RC rc = RC::SUCCESS;
+/***********************************************************/
+//destory index
+  if(indexes_.size()!=0)
+  {
+    for(auto index:indexes_)
+    {
+        std::string index_file = table_index_file(base_dir_.c_str(), name, index->index_meta().name); //TODO
+        Index::drop(); //TODO
+    }
+  }
+//destory record handler
+  rc = record_handler_->destory();
+  delete record_handler_;
+  record_handler_ = nullptr;
+
+
+//destory bufferpool and remove data file
+  std::string data_file = table_data_file(base_dir, name);
+  BufferPoolManager &bpm = BufferPoolManager::instance();
+  rc = bpm.drop_file(data_file.c_str());  //TODO
+
+
+//remove meta file
+  int remove_ret = ::remove(path);
+  return rc;
+}
+
 RC Table::open(const char *meta_file, const char *base_dir)
 {
   // 加载元数据文件

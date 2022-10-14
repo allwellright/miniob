@@ -618,6 +618,13 @@ RC BufferPoolManager::create_file(const char *file_name)
   return RC::SUCCESS;
 }
 
+RC BufferPoolManager::drop_file(const char *file_name)
+{
+    close_file(file_name);
+    int rc = ::remove(file_name);
+    return RC::SUCCESS;
+}
+
 RC BufferPoolManager::open_file(const char *_file_name, DiskBufferPool *& _bp)
 {
   std::string file_name(_file_name);

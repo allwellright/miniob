@@ -53,7 +53,7 @@ public:
 
 protected:
   RC init(const IndexMeta &index_meta, const FieldMeta &field_meta);
-
+  RC drop();
 protected:
   IndexMeta index_meta_;
   FieldMeta field_meta_;  /// 当前实现仅考虑一个字段的索引

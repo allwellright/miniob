@@ -268,6 +268,11 @@ RC RecordFileHandler::init(DiskBufferPool *buffer_pool)
   return RC::SUCCESS;
 }
 
+RC RecordFileHandler::destory()
+{
+  return RC::SUCCESS;
+}
+
 void RecordFileHandler::close()
 {
   if (disk_buffer_pool_ != nullptr) {

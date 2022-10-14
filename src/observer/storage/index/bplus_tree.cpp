@@ -805,6 +805,13 @@ RC BplusTreeHandler::create(const char *file_name, AttrType attr_type, int attr_
   return RC::SUCCESS;
 }
 
+RC BplusTreeHandler::drop(const char *file_name)
+{
+  BufferPoolManager &bpm = BufferPoolManager::instance();
+  RC rc = bpm.drop_file(file_name);
+}
+
+
 RC BplusTreeHandler::open(const char *file_name)
 {
   if (disk_buffer_pool_ != nullptr) {

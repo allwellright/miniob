@@ -318,6 +318,7 @@ public:
   ~BufferPoolManager();
 
   RC create_file(const char *file_name);
+  RC drop_file(const char *file_name);
   RC open_file(const char *file_name, DiskBufferPool *&bp);
   RC close_file(const char *file_name);
 

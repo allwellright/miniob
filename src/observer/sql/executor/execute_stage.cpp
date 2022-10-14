@@ -170,6 +170,9 @@ void ExecuteStage::handle_request(common::StageEvent *event)
     } break;
 
     case SCF_DROP_TABLE:
+    {
+      do_drop_table(sql_event);
+    }break;
     case SCF_DROP_INDEX:
     case SCF_LOAD_DATA: {
       default_storage_stage_->handle_event(event);
@@ -226,7 +229,7 @@ void print_tuple_header(std::ostream &os, const ProjectOperator &oper)
       os << " | ";
     }
 
-    if (cell_spec->alias()) {
+    if (cell_spec->alias()) {   //输出字段名
       os << cell_spec->alias();
     }
   }
@@ -411,7 +414,7 @@ RC ExecuteStage::do_select(SQLStageEvent *sql_event)
   }
 
   std::stringstream ss;
-  print_tuple_header(ss, project_oper);
+  print_tuple_header(ss, project_oper);  //将字段名输出
   while ((rc = project_oper.next()) == RC::SUCCESS) {
     // get current record
     // write to response
@@ -465,6 +468,21 @@ RC ExecuteStage::do_create_table(SQLStageEvent *sql_event)
   }
   return rc;
 }
+
+RC ExecuteStage::do_drop_table(SQLStageEvent *sql_event)
+{
+  const DropTable &drop_table = sql_event->query()->sstr.drop_table;
+  SessionEvent *session_event = sql_event->session_event();
+  Db *db = session_event->session()->get_current_db();
+  RC rc = db->drop_table(drop_table.relation_name);
+  if (rc == RC::SUCCESS) {
+    session_event->set_response("SUCCESS\n");
+  } else {
+    session_event->set_response("FAILURE\n");
+  }
+  return rc;
+}
+
 RC ExecuteStage::do_create_index(SQLStageEvent *sql_event)
 {
   SessionEvent *session_event = sql_event->session_event();
